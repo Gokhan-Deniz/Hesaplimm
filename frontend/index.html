@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hesaplım.com – MVP</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background:#fafafa }
+    h1 { margin-top:0 }
+    .row { margin: 10px 0; display:flex; gap:8px; }
+    input { flex:1; padding:10px; border:1px solid #ccc; border-radius:8px }
+    button { padding:10px 14px; border:1px solid #1a73e8; background:#1a73e8; color:#fff; border-radius:8px; cursor:pointer }
+    #log { white-space:pre-wrap; font-family:ui-monospace,Consolas,monospace; background:#fff; border:1px solid #eee; padding:10px; border-radius:8px; margin-top:12px }
+    table { border-collapse: collapse; width: 100%; margin-top: 16px; background:#fff }
+    th, td { border: 1px solid #eee; padding: 8px; text-align: left; }
+    th { background:#f5f5f5 }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <h1>Hesaplım – Fiyat + Kargo Karşılaştırma</h1>
+
+  <div class="row">
+    <input id="q" placeholder="Ürün ara... (örn: AirPods)" />
+    <button id="btn">Ara</button>
+    <button id="ping">API Ping</button>
+  </div>
+
+  <div id="log" class="hidden"></div>
+
+  <table id="results" class="hidden">
+    <thead>
+      <tr>
+        <th>Ürün</th>
+        <th>En Ucuz Satıcı</th>
+        <th>Fiyat</th>
+        <th>Kargo</th>
+        <th>Toplam</th>
+        <th>Site</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const API = 'http://127.0.0.1:4000';
+
+    const logBox = document.getElementById('log');
+    function log(msg){
+      logBox.classList.remove('hidden');
+      logBox.textContent += (typeof msg === 'string' ? msg : JSON.stringify(msg, null, 2)) + '\n';
+    }
+
+    async function pingAPI(){
+      try {
+        const res = await fetch(API + '/api/health');
+        const data = await res.json();
+        log('PING OK: ' + JSON.stringify(data));
+      } catch (e) {
+        log('PING ERROR: ' + e.message);
+      }
+    }
+
+    async function doSearch(){
+      const q = document.getElementById('q').value.trim();
+      if(!q){ log('Uyarı: Arama metni boş.'); return; }
+
+      let data;
+      try {
+        const res = await fetch(API + '/api/search?q=' + encodeURIComponent(q));
+        if(!res.ok){
+          log('HTTP Hatası: ' + res.status + ' ' + res.statusText);
+          return;
+        }
+        data = await res.json();
+      } catch (e) {
+        log('İstek hatası: ' + e.message);
+        return;
+      }
+
+      const table = document.getElementById('results');
+      const tbody = table.querySelector('tbody');
+      tbody.innerHTML = '';
+      table.classList.remove('hidden');
+
+      if(!data.products || data.products.length === 0){
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td colspan="6">Sonuç bulunamadı.</td>`;
+        tbody.appendChild(tr);
+        log('Arama: sonuç yok → "' + q + '"');
+        return;
+      }
+
+      data.products.forEach(p=>{
+        if(!p.best_total_price) return;
+        const o = p.best_total_price;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${p.name}</td>
+          <td>${o.seller || '-'}</td>
+          <td>${(o.price ?? 0).toLocaleString('tr-TR')} ₺</td>
+          <td>${(o.shipping_fee ?? 0).toLocaleString('tr-TR')} ₺</td>
+          <td>${(o.total ?? 0).toLocaleString('tr-TR')} ₺</td>
+          <td><a href="${o.url}" target="_blank" rel="noopener">${o.site}</a></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      log('Arama OK: ' + (data.total ?? 0) + ' ürün listelendi.');
+    }
+
+    document.getElementById('btn').addEventListener('click', doSearch);
+    document.getElementById('ping').addEventListener('click', pingAPI);
+
+    // Enter tuşuna basınca ara
+    document.getElementById('q').addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter') doSearch();
+    });
+  </script>
+</body>
+</html>

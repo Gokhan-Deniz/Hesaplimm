@@ -1,0 +1,66 @@
+{
+  "products": [
+    {
+      "id": "prd_airpodspro2",
+      "name": "Apple AirPods Pro (2. Nesil) MagSafe",
+      "brand": "Apple",
+      "model": "MQD83TU/A",
+      "gtin": "194253397808",
+      "thumbnail": "https://dummyimage.com/120x120/eee/aaa&text=AirPods"
+    },
+    {
+      "id": "prd_xiaomi13",
+      "name": "Xiaomi 13 256GB Siyah",
+      "brand": "Xiaomi",
+      "model": "13",
+      "gtin": "6941812711234",
+      "thumbnail": "https://dummyimage.com/120x120/eee/aaa&text=Xiaomi+13"
+    }
+  ],
+  "offers": {
+    "prd_airpodspro2": [
+      {
+        "site": "hepsiburada",
+        "seller": "HB Mağaza",
+        "price": 1970,
+        "shipping_fee": 0,
+        "delivery_eta_days": 1,
+        "url": "https://www.hepsiburada.com/airpods"
+      },
+      {
+        "site": "trendyol",
+        "seller": "Trendyol Tech",
+        "price": 1950,
+        "shipping_fee": 49,
+        "delivery_eta_days": 2,
+        "url": "https://www.trendyol.com/airpods"
+      },
+      {
+        "site": "amazon",
+        "seller": "Amazon TR",
+        "price": 2050,
+        "shipping_fee": 0,
+        "delivery_eta_days": 3,
+        "url": "https://www.amazon.com.tr/airpods"
+      }
+    ],
+    "prd_xiaomi13": [
+      {
+        "site": "trendyol",
+        "seller": "Xiaomi Shop",
+        "price": 28999,
+        "shipping_fee": 0,
+        "delivery_eta_days": 2,
+        "url": "https://www.trendyol.com/xiaomi13"
+      },
+      {
+        "site": "hepsiburada",
+        "seller": "HB Cep",
+        "price": 28749,
+        "shipping_fee": 79,
+        "delivery_eta_days": 1,
+        "url": "https://www.hepsiburada.com/xiaomi13"
+      }
+    ]
+  }
+}
